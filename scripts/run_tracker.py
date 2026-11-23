@@ -1,7 +1,8 @@
-"""Run the stage 0 tracker on one MOT17 video and save the result.
+"""Run a tracker (stage 0 or stage 1) on one MOT17 video and save the result.
 
 Example (from the repo folder):
     python -m scripts.run_tracker MOT17-09-FRCNN
+    python -m scripts.run_tracker MOT17-09-FRCNN --stage 1 --out outputs/stage1
 """
 import argparse
 from pathlib import Path
@@ -10,6 +11,7 @@ import numpy as np
 
 from tracker.io_mot import load_detections, read_sequence_length, write_results
 from tracker.stage0 import IoUTracker
+from tracker.stage1 import SortTracker
 
 
 def main():
@@ -17,6 +19,7 @@ def main():
     parser.add_argument("sequence", help="for example MOT17-09-FRCNN")
     parser.add_argument("--data", default="data/MOT17/train")
     parser.add_argument("--out", default="outputs/stage0")
+    parser.add_argument("--stage", type=int, default=0, choices=[0, 1])
     parser.add_argument("--min-score", type=float, default=0.0)
     parser.add_argument("--iou-threshold", type=float, default=0.3)
     parser.add_argument("--max-age", type=int, default=1)
@@ -26,7 +29,8 @@ def main():
     detections = load_detections(seq_dir / "det" / "det.txt", min_score=args.min_score)
     n_frames = read_sequence_length(seq_dir / "seqinfo.ini")
 
-    tracker = IoUTracker(iou_threshold=args.iou_threshold, max_age=args.max_age)
+    tracker_class = SortTracker if args.stage == 1 else IoUTracker
+    tracker = tracker_class(iou_threshold=args.iou_threshold, max_age=args.max_age)
     no_boxes = np.zeros((0, 5))
     rows = []
     for frame in range(1, n_frames + 1):   # every frame, even frames without boxes
