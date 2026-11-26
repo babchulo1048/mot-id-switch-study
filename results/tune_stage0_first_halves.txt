@@ -1,0 +1,10 @@
+stage 0, first halves, 7 videos
+max_age   IDSW    IDF1    HOTA    IDs
+      1    842    53.0    48.9   1297
+      5    876    52.6    48.5   1032
+     10    884    52.9    48.7    931
+     30    912    54.6    50.1    778
+     60    940    54.6    50.3    704
+     90    956    54.7    50.4    671
+    150    968    54.4    50.1    655
+chosen max_age = 90 (IDF1 54.7 on the first halves)
